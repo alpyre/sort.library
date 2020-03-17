@@ -10,7 +10,7 @@ An open source AmigaOS library for various sorting algorithms.
 - Merge Sort
 - Counting Sort
 - Radix Sort
-- Heap Sort Sort
+- Heap Sort
 
 ### Supported data structures:
 - Arrays
