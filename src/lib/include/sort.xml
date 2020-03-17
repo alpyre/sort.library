@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE library SYSTEM "library.dtd">
+<library name="sort" basename="SortBase" openname="sort.library">
+	<include>exec/types.h</include>
+	<include>dos/dos.h</include>
+	<include>limits.h</include>
+	<include>clib/alib_protos.h</include>
+	<interface name="main" version="1.0" struct="SortIFace" prefix="_Sort_" asmprefix="ISort" global="ISort">
+		<method name="Obtain" result="ULONG"/>
+		<method name="Release" result="ULONG"/>
+		<method name="Expunge" result="void" status="unimplemented"/>
+		<method name="Clone" result="struct Interface *" status="unimplemented"/>
+		<method name="SortA" result="ULONG">
+			<arg name="array" type="APTR"/>
+			<arg name="size" type="ULONG"/>
+			<arg name="tagList" type="struct TagItem *"/>
+		</method>
+		<method name="Sort" result="ULONG">
+			<arg name="array" type="APTR"/>
+			<arg name="size" type="ULONG"/>
+			<arg name="tag1" type="ULONG"/>
+		</method>
+	</interface>
+</library>

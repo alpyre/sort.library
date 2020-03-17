@@ -1,0 +1,114 @@
+USAGE
+
+Sort Library is an Amiga Library written in C. Below you will find basic
+information how to use it in your Amiga C code.
+
+OPENING/CLOSING THE LIBRARY
+
+  On OS3.x and MorphOs
+    Include sort library header file:
+    #include <sort/sort.h>
+
+    Declare the library base as global:
+    struct Library *SortBase;
+
+    Open and close as below:
+    SortBase = OpenLibrary("sort.library", 0);
+    if (SortBase) {
+
+      // sort your data with Sort()
+
+      CloseLibrary(SortBase);
+    }
+    else {
+      puts("Could not open sort.library!");
+    }
+
+  On OS4
+    Include sort library header file:
+    #include <sort/sort.h>
+
+    Declare the library base and interface as globals:
+    struct Library *SortBase;
+    struct SortIFace *ISort;
+
+    Open and close as below:
+    SortBase = OpenLibrary("sort.library", 0);
+    if (SortBase) {
+      ISort = (struct SortIFace *)GetInterface(SortBase, "main", 1, NULL);
+      if (ISort) {
+
+        // sort your data with ISort->Sort()
+        // or directly Sort() if you're compiling with -D__USE_INLINE__
+
+        DropInterface((struct Interface *)ISort);
+      }
+    CloseLibrary(SortBase);
+    }
+    else {
+      puts("Could not open sort.library!");
+    }
+
+CALLING SORT
+
+Functions SortA() and (and it's varargs counterpart Sort()) are the only
+functions provided by sort.library. By default it sorts an array of 32bit values
+(LONG's) yet it is configurable using tags to be able to sort any data
+structure (for more information on tags see:
+http://amigadev.elowar.com/read/ADCD_2.1/Libraries_Manual_guide/node0496.html).
+
+Examples:
+  Sort an array of LONG values:
+  *****************************
+
+  LONG arr[10] = {6, 7, 3, 2, 9, 8, 0, 1, 5, 4};
+  Sort(arr, 10, TAG_END);
+  // array is now sorted as {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+  Sort an array of characters (aka. a string):
+  ********************************************
+
+  UBYTE str[] = "SortLibrary";
+  Sort(str, strlen(str)-1, SORT_ItemSize, 1, TAG_END);
+  // String is now "LSabiorrrty"
+
+  Sort array of LONG values that are within a specific range with Counting Sort:
+  ******************************************************************************
+
+  LONG arr[8] = {0, -125, 12, 5, 25, 190, 55, -14};
+  struct Range range;
+  range.min = -125;
+  range.max =  190;
+  Sort(arr, 8, SORT_Algorithm, SORT_Counting,
+               SORT_Range, &range,
+               TAG_END);
+  // Array is now sorted as {-125, -14, 0, 5, 12, 25, 55, 190}
+
+  Sort a List according to priority:
+  **********************************
+  struct List myList;
+  NewList(&myList);
+
+  /*
+  assume we've defined our custom node structure and done populating the list
+  with our newly allocated items here. For more information on lists see:
+  http://amigadev.elowar.com/read/ADCD_2.1/Libraries_Manual_guide/node02D7.html
+  */
+
+  Sort(myList, SORT_List, TAG_END);
+  // your list is sorted against the value in ln_Pri member of it's nodes
+
+  Note:
+  Sort does not move items in memory during swap operations. It sorts the lists
+  by altering the link pointers of the nodes (as expected). This means if you
+  are keeping a pointer to a specific item in the list, it will still point to
+  the right item after a sort. This also provides items with different payload
+  sizes to be sorted. And finally this will provide a good performance
+  improvement if the payloads are higher than 32 bytes (every swap operation on
+  a list costs re-setting 8 link pointers).
+
+SEE ALSO
+
+Examples above demonstrate the default behaviour of Sort Library. To fully grasp
+all other configuration possibilities through tags please see the provided
+example codes.

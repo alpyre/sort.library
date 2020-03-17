@@ -1,0 +1,47 @@
+COMPILING
+
+The source codes for Sort Library, SortBench and provided example source codes
+are created using the Atom.io (see https://atom.io/) package language-amigaos-c
+(see https://github.com/alpyre/language-amigaos-c).
+This means they provide makefiles which require at least one of the cross
+compiler toolchains for AmigaOS (and compatibles). The toolchains below are
+tested to be working:
+  For 68k OS3:     https://github.com/bebbo/amigaos-cross-toolchain
+  For PPC OS4:     https://github.com/jens-maus/amigaos-cross-toolchain
+  For PPC MorphOS: https://github.com/AmigaPorts/morphos-cross-toolchain (GCC6)
+
+Source codes include and make use of SDI_headers. This means they are able to
+compile for AmigaOS3, AmigaOS4 and MorphOS.
+(see http://aminet.net/package/dev/c/SDI_headers.lha)
+
+If you have installed the required toolchains on your system, to compile:
+  - Open a shell terminal
+  - cd to project directory
+  - type make
+This will compile for m68k AmigaOS3.
+
+To compile for AmigaOS4 type:
+  make OS=os4
+To compile for MorphOS type:
+  make OS=mos
+
+OTHER COMPILERS
+
+Since SDI_headers are used, the code should compile with various classic
+compilers like SAS/C, VBCC etc., yet this is not tested and there are no
+makefiles provided for them.
+If you feel adventurous enough to experiment with other compilers, always feel
+free to open issues if there are any and pull requests if you've figured them
+out.
+
+COMPILING YOUR PROGRAMS
+
+Your programs that open sort.library should be able to access the include
+directory provided in src/lib during compilation. You can either have the
+contents of that directory copied into your SDK's include directories or keep a
+copy of it in your project directory and use -Iinclude in your makefile.
+
+Also you should not set -DNO_INLINE_STDARG in your makefile for OS3 and MorphOS.
+Because of the way SDI_headers are designed we need inline macros to have the
+Sort() function (varargs variant of the function SortA() which you will probably
+be using the most).
