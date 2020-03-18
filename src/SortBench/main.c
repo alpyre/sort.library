@@ -36,6 +36,8 @@
 ///
 ///includes
 //standard headers
+#include <stdio.h>
+#include <string.h>
 #include <limits.h>
 
 //Amiga headers
@@ -48,7 +50,6 @@
 
 //Amiga protos
 #include <proto/exec.h>
-#include <clib/alib_protos.h>
 #include <proto/utility.h>
 
 /* MUI headers */
@@ -189,7 +190,11 @@ struct Config *Init()
   {
     timeReq = OpenTimer();
     if (timeReq)
+    #ifdef __amigaos4__
       TimerBase = timeReq->tr_node.io_Device;
+    #else
+      TimerBase = (struct Library*)timeReq->tr_node.io_Device;
+    #endif
     else
     {
       puts("Couldn't open timer.device");
@@ -355,10 +360,10 @@ Object* getGroupChild(Object* group, LONG n)
 {
   struct List *list;
   LONG i;
-  Object* obj;
+  Object* obj = NULL;
   struct Node* node;
 
-  GetAttr(MUIA_Group_ChildList, group, &list);
+  GetAttr(MUIA_Group_ChildList, group, (ULONG*)&list);
   node = list->lh_Head;
 
   for (i = 0; i<n; i++)
@@ -925,7 +930,7 @@ VOID sortBench()
   else gauge_counter = -1;
   update_gauge();
   // Mark the algorithm with best time with bold letters
-  GetAttr(MUIA_Text_Contents, dsp[best], &str);
+  GetAttr(MUIA_Text_Contents, dsp[best], (ULONG*)&str);
   strcpy(strBuf, "\33b");
   strcat(strBuf, str);
   DoMethod(dsp[best], MUIM_Set, MUIA_Text_Contents, strBuf);
@@ -978,7 +983,6 @@ VOID fillArrayRnd(APTR arr, ULONG size, ULONG range, ULONG itemSize, ULONG seed)
  ******************************************************************************/
 VOID fillListRnd(struct MinList *list, APTR mem, ULONG size, ULONG range, ULONG seed)
 {
-  APTR a;
   struct MyItem *item;
   ULONG val = seed;
   ULONG itemSize = sizeof(struct MyItem);

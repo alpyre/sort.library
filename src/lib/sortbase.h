@@ -6,7 +6,7 @@
 struct SortBase
 {
     struct Library libNode;
-    APTR segList;
+    BPTR segList;
   #ifdef USE_SEMAPHORE
     struct SignalSemaphore libSemaphore;
   #endif

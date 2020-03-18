@@ -30,8 +30,8 @@ ifeq ($(OS), mos)
   CPU = -mcpu=powerpc
   CC = ppc-morphos-gcc
   OPTIONS = -D__USE_INLINE__ -DNO_INLINE_STDARG
-  LFLAGS = -s -noixemul -nostdlib -nostartfiles
-  OPTIMIZE = -O2
+  LFLAGS = -s -noixemul -nostdlib -nostartfiles -lgcc
+  OPTIMIZE = -Os
   OBJS = init.o sort.o
 endif
 endif

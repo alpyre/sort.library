@@ -1,8 +1,8 @@
 // This file is a part of Sort Library
 
 #define VERSION		0
-#define REVISION	8
-#define RSTRING   "0.8"
+#define REVISION	10
+#define RSTRING   "0.10"
 #define LIBNAME   "sort.library"
 #ifdef __SASC
   #define DATE __AMIGADATE__

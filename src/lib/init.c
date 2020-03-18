@@ -45,12 +45,8 @@
 ///globals
 #ifdef __GNUC__
   volatile STATIC CONST UBYTE USED_VAR __attribute__((section(".text"))) VersionTag[] = VERSTAG;
-  volatile STATIC CONST UBYTE USED_VAR __attribute__((section(".text"))) vstring[] = VSTRING;
-  volatile STATIC CONST UBYTE USED_VAR __attribute__((section(".text"))) libname[] = LIBNAME;
 #else
   CONST UBYTE USED_VAR VersionTag[] = VERSTAG;
-  CONST UBYTE USED_VAR vstring[] = VSTRING;
-  CONST UBYTE USED_VAR libname[] = LIBNAME;
 #endif
 
 #ifdef __MORPHOS__
@@ -78,14 +74,13 @@ struct ExecBase *SysBase;
 ///
 ///entry
 // If a user tries to execute this binary it should return safely
-#ifdef __amigaos4__
-  int32 _start( void )
-  {
-	   return RETURN_FAIL;
-  }
-#else
-  STATIC CONST UWORD __rts = 0x4E75;
+#if !defined (__amigaos4__) && !defined (__MORPHOS__)
+  asm(".text\n\tjra __start\n");
 #endif
+LONG _start( void )
+{
+  return RETURN_FAIL;
+}
 ///
 
 /*******************************************************************************
@@ -163,11 +158,11 @@ static const APTR libVectors[] =
 #endif
       base->libNode.lib_Node.ln_Type = NT_LIBRARY;
       base->libNode.lib_Node.ln_Pri  = 0;
-      base->libNode.lib_Node.ln_Name = libname;
+      base->libNode.lib_Node.ln_Name = LIBNAME;
       base->libNode.lib_Flags        = LIBF_SUMUSED|LIBF_CHANGED;
       base->libNode.lib_Version      = VERSION;
       base->libNode.lib_Revision     = REVISION;
-      base->libNode.lib_IdString     = vstring;
+      base->libNode.lib_IdString     = VSTRING;
 
       base->segList = seglist;
 
@@ -176,18 +171,28 @@ static const APTR libVectors[] =
       #endif
 
       // Add your additional init code here
-      UtilityBase = (struct UtilityBase*)OpenLibrary("utility.library", 0);
 #ifdef __amigaos4__
+      UtilityBase = (struct Library*)OpenLibrary("utility.library", 0);
       IUtility = (struct UtilityIFace *)GetInterface(UtilityBase, "main", 1, NULL);
-#endif
-
-#if !defined(__amigaos4__) && !defined(__MORPHOS__)
+#elif __MORPHOS__
+      UtilityBase = (struct Library*)OpenLibrary("utility.library", 0);
+#else
+      UtilityBase = (struct UtilityBase*)OpenLibrary("utility.library", 0);
       AddLibrary((struct Library *)base);
     }
 #endif
-
     return base;
   }
+
+#ifdef __MORPHOS__
+  STATIC CONST IPTR libInitTab[] =
+  {
+    sizeof(struct SortBase),
+    (IPTR)libVectors,
+    (IPTR)NULL,
+    (IPTR)libInit
+  };
+#endif
 ///
 ///libExpunge
 #ifdef __amigaos4__
@@ -378,17 +383,19 @@ STATIC CONST USED_VAR struct Resident ROMTag =
   #if defined(__amigaos4__)
   RTF_AUTOINIT|RTF_NATIVE,      // Add RTF_COLDSTART to be reset resident
   #elif defined(__MORPHOS__)
-  RTF_PPC,
+  RTF_AUTOINIT | RTF_PPC | RTF_EXTENDED,
   #else
   0,
   #endif
   VERSION,
   NT_LIBRARY,
   0,                             // PRIORITY not needed unless reset resident
-  (char *)libname,
-  (char *)vstring,
+  (char *)LIBNAME,
+  (char *)VSTRING,
   #if defined(__amigaos4__)
   (APTR)libCreateTags,
+  #elif defined(__MORPHOS__)
+  (APTR)libInitTab,
   #else
   (APTR)libInit,
   #endif
