@@ -6,6 +6,7 @@
 #include <string.h>
 #include <exec/exec.h>
 #include <proto/exec.h>
+#include <proto/utility.h>
 
 #include <sort/sort.h>
 
