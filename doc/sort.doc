@@ -1,0 +1,161 @@
+TABLE OF CONTENTS
+
+sort.library/Sort
+
+ ******************************************************************************
+
+     This file is part of Sort Library.
+     Copyright (C) 2020 Ibrahim Alper Sönmez
+
+     Sort Library is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     Sort Library is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with Sort Library. If not, see <https://www.gnu.org/licenses/>.
+
+ ******************************************************************************
+
+sort.library/Sort                                           sort.library/Sort
+
+   NAME
+      SortA -- Sort an array or list with the algorithm of your choice.
+
+   SYNOPSIS
+      result = SortA(array, size, taglist);
+      D0             A0     D0    A1
+
+      ULONG SortA(APTR, ULONG, struct TagItem *);
+
+      result = Sort(array, size, tag1, ...);
+
+      ULONG SortA(APTR, ULONG, ULONG, ...);
+
+   FUNCTION
+      Sorts an array or a double linked list (a.k.a Exec List) with one of
+      the available sort algorithms. Any data structure can be sorted by
+      providing custom compare functions (for comparison based algorithms)
+      or custom hash functions (for hash set based algorithms) in tags.
+      For arrays: it will default to sort an array of LONG integers by value.
+      For lists: it will default to sort a full exec list by the value in the
+      ln_Pri member of it's nodes.
+
+   INPUTS
+      array - pointer to array or list
+      size - size of the array or SORT_List to inform that the pointer given
+             in the first argument is a pointer to a list (struct List*)
+      taglist - tags to configure sort for various data structures
+
+   TAGS
+      SORT_Algorithm  - One of the sort algorithms available. Will default
+                        to SORT_Auto when ommited:
+                        SORT_Auto
+                        SORT_Selection
+                        SORT_Insertion
+                        SORT_Shell
+                        SORT_Bubble
+                        SORT_Quick
+                        SORT_Merge
+                        SORT_Counting
+                        SORT_Radix
+                        SORT_Heap
+
+                        For more information on these algorithms refer to
+                        doc/ALGORITHMS.
+      SORT_ListSize   - If the length of the list to be sorted is known
+                        passing it with this tag will prevent a count in some
+                        algorithms that require it (Merge, Counting, Radix).
+      SORT_ItemSize   - Size of each array element in bytes (not required
+                        for lists). Will default to sizeof(LONG) when ommited.
+      SORT_CompareFnc - A custom function to compare two array elements (or
+                        list items). It should be in the form below:
+                        LONG myCompare(APTR p1, APTR p2);
+                        p1- a void pointer to the element/item to be compared
+                        p2- a void pointer to the other element/item to be
+                            compared with the first (p1)
+
+                        The function should cast the pointers to the
+                        regarding data structure, access the properties to do
+                        the comparison, compare them as expected and return:
+                        -1 - if the first one is lesser then the second
+                         0 - if the first one is equal to the second
+                         1 - if the first one is bigger then the second
+                        See example code for details.
+                        Will default to compare two LONG integers.
+      SORT_HashFnc    - A custom hash function to be used with Counting and
+                        Radix Sort. It should be in the form below:
+                        ULONG myHash(APTR p, ULONG digit);
+                        p - a void pointer to array element (or list item)
+                        digit - UNUSED for Counting Sort hashes. For Radix
+                                Sort hashes your function should return this
+                                digit of the value.
+                        See example code for details.
+                        For arrays this will default to a function that
+                        hashes LONG integers. For lists it will default to
+                        hash the ln_Pri member. For Radix Sort it will
+                        default to use decimal base.
+      SORT_Range      - A pointer to a struct Range which provides min and
+                        max values the hashes will be. It determines the size
+                        of the hash set that will be used when sorting with
+                        Counting or Radix Sorts.
+                        Cannot be ommited when using Counting Sort.
+                        It will default to min -9, max 9 when using Radix.
+      SORT_Digits     - The number of digits in the value that has the most
+                        digits in the array/list. For example for an array:
+                        LONG arr[] = {0, -125, 12, 5, 25};
+                        SORT_Digits should be set to 3 (-125 has 3 digits -
+                        that is when sorting in decimal radix of course).
+                        Will default to 3 when sorting lists (because ln_Pri
+                        is a BYTE value so range is in between -128, 127).
+                        Cannot be ommited otherwise (returns an error if so )
+                        Can be manipulated to use different properties of an
+                        element/item other than a digit of an integer value.
+                        See example code for details.
+      SORT_Reverse    - Will sort the array in reverse order
+      SORT_MemPool    - Sort will use the provided memory pool to allocate
+                        the extra memory required by some sort algorithms.
+
+   RESULT
+      result - 0: if the sort was successful
+              SORT_ERR_MEMORY: if memory is insufficient for the algorithm
+              SORT_ERR_RANGE: if the range (struct Range *) required by
+              Counting Sort algorithm is not provided in tags.
+              SORT_ERR_DIGITS: if the digit count required by Radix Sort
+              algorithm is not provided in tags.
+   EXAMPLE
+      LONG arr[10] = {6, 10, 8, 3, 5, 1, 9, 4, 2, 7};
+      Sort(arr, 10, TAG_END); // sorts with SORT_Auto
+      printArray(arr, 10);
+
+     >1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+
+      -- OR --
+
+      LONG arr[12] = {0, -125, 12, 5, 25, 1015, -38, -7, 4, 5, 12, -3};
+      struct Range range;
+      range.min = -125;
+      range.max = 1015;
+      Sort(arr, 12, SORT_Algorithm, SORT_Counting,
+                    SORT_Range, &range,
+                    TAG_END);
+      printArray(arr, 12);
+
+     >-125, -38, -7, -3, 0, 4, 5, 5, 12, 12, 25, 1015
+
+   NOTES
+      Passing invalid size and/or range values may result in trashed memory,
+      crashes which may cause invalidated disk partitions (and in worst case
+      can even fail file systems). Use with care.
+
+   BUGS
+      No known bugs yet
+
+   SEE ALSO
+      See documents and example source code for more detailed information.
+

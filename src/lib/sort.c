@@ -160,7 +160,7 @@ struct Partition
 *                        SORT_Heap                                             *
 *                                                                              *
 *                        For more information on these algorithms refer to     *
-*                        Docs/SortAlgorithms.                                  *
+*                        doc/ALGORITHMS.                                       *
 *      SORT_ListSize   - If the length of the list to be sorted is known       *
 *                        passing it with this tag will prevent a count in some *
 *                        algorithms that require it (Merge, Counting, Radix).  *
@@ -215,12 +215,12 @@ struct Partition
 *                        the extra memory required by some sort algorithms.    *
 *                                                                              *
 *   RESULT                                                                     *
-*     result - 0: if the sort was successful                                   *
-*              SORT_ERR_MEMORY: if memory is insufficient for the algorithm    *
-*              SORT_ERR_RANGE: if the range (struct Range *) required by       *
-*              Counting Sort algorithm is not provided in tags.                *
-*              SORT_ERR_DIGITS: if the digit count required by Radix Sort      *
-*              algorithm is not provided in tags.                              *
+*      result - 0: if the sort was successful                                  *
+*               SORT_ERR_MEMORY: if memory is insufficient for the algorithm   *
+*               SORT_ERR_RANGE: if the range (struct Range *) required by      *
+*               Counting Sort algorithm is not provided in tags.               *
+*               SORT_ERR_DIGITS: if the digit count required by Radix Sort     *
+*               algorithm is not provided in tags.                             *
 *   EXAMPLE                                                                    *
 *      LONG arr[10] = {6, 10, 8, 3, 5, 1, 9, 4, 2, 7};                         *
 *      Sort(arr, 10, TAG_END); // sorts with SORT_Auto                         *

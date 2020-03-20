@@ -1,0 +1,15 @@
+SORT ALGORITHMS
+
+----------------------------------------------------------------------------------------------------
+Name     |Time Comp. |Stable |Aux. Space Comp. |Notes (n: number of elements, k: range of elements)|
+---------|-----------|-------|-----------------|---------------------------------------------------|
+Select   |O(n^2)     |No     |-                |                                                   |
+Insert   |O(n^2)     |Yes    |-                |O(n) time complexity for an already sorted list    |
+Shell    |O(n^3/2)   |No     |-                |                                                   |
+Bubble   |O(n^2)     |Yes    |-                |O(n) time complexity for an already sorted list    |
+Merge    |O(n log n) |Yes    |O(n)             |O(2n) aux. space if sorting a list                 |
+Quick    |O(n log n) |No     |-                |O(n^2) time complexity in worst case               |
+Counting |O(2n+k)    |Yes    |O(n+k)           |                                                   |
+Radix    |O(n)       |Yes    |O(n+k)           |                                                   |
+Heap     |O(n log n) |No     |-                |                                                   |
+----------------------------------------------------------------------------------------------------
