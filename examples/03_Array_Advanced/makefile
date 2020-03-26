@@ -3,7 +3,7 @@
 #  - for ppc OS4 binaries use: make OS=os4
 #  - for ppc MorphOS binaries use: make OS=mos
 
-EXE = 03_Arrays_Advanced
+EXE = 03_Array_Advanced
 ################################################################################
 # Target OS
 ifndef (OS)
@@ -32,7 +32,7 @@ endif
 endif
 ################################################################################
 # Common options
-WARNINGS = -Wall -Wno-pointer-sign
+WARNINGS = -Wall
 OPTIMIZE = -Os
 DEBUG =
 IDIRS = -I../..//src/lib/includes/ -I../../src/lib/include

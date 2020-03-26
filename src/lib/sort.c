@@ -19,6 +19,8 @@
  ******************************************************************************/
 
 ///includes
+#include <stdarg.h>
+
 #ifdef __MORPHOS__
   #include <emul/emulregs.h>
 #endif
@@ -649,14 +651,6 @@ LIBPROTO(SortA, ULONG, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, APTR array), REG
 
   return rc;
 }
-///
-///Sort
-#ifdef __amigaos4__
-LIBPROTOVA(Sort, ULONG, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, APTR array), REG(d0, ULONG size), REG(d1, ULONG tag1), ...)
-{
-  return SortA(array, size, (struct TagItem*)&tag1);
-}
-#endif
 ///
 
 /***************************

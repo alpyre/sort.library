@@ -21,6 +21,15 @@
 
  ******************************************************************************/
 
+#ifndef _SFDC_VARARG_DEFINED
+	#define _SFDC_VARARG_DEFINED
+	#ifdef __HAVE_IPTR_ATTR__
+		typedef APTR _sfdc_vararg __attribute__((iptr));
+	#else
+		typedef ULONG _sfdc_vararg;
+	#endif /* __HAVE_IPTR_ATTR__ */
+#endif /* _SFDC_VARARG_DEFINED */
+
 #include <exec/types.h>
 #include <exec/exec.h>
 #include <exec/interfaces.h>
@@ -28,9 +37,9 @@
 
 #define SortA(array, size, tagList) ISort->SortA((array), (size), (tagList))
 #if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || (__GNUC__ >= 3)
-#define Sort(array, size, ...) ISort->Sort((array), (size), __VA_ARGS__)
+#define Sort(array, size, ...) ({_sfdc_vararg args[] = {__VA_ARGS__}; SortA((array), (size), args);})
 #elif (__GNUC__ == 2 && __GNUC_MINOR__ >= 95)
-#define Sort(array, size, tag1, ...) ISort->Sort((array), (size), (tag1), ## vargs)
+#define Sort(array, size, ...) ({_sfdc_vararg args[] = {## vargs}; SortA((array), (size), args);})
 #endif
 
 #endif /* _INLINE4_SORT_H */

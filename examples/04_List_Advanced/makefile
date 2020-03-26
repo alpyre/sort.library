@@ -3,7 +3,7 @@
 #  - for ppc OS4 binaries use: make OS=os4
 #  - for ppc MorphOS binaries use: make OS=mos
 
-EXE = 04_Lists_Advanced
+EXE = 04_List_Advanced
 ################################################################################
 # Target OS
 ifndef (OS)

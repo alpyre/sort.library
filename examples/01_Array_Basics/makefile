@@ -32,7 +32,7 @@ endif
 endif
 ################################################################################
 # Common options
-WARNINGS = -Wall -Wno-pointer-sign
+WARNINGS = -Wall
 OPTIMIZE = -Os
 DEBUG =
 IDIRS = -I../..//src/lib/includes/ -I../../src/lib/include

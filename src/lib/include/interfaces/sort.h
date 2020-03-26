@@ -35,7 +35,6 @@ struct SortIFace
 	struct Interface * APICALL (*Clone)(struct SortIFace *Self);
 
 	ULONG APICALL (*SortA)(struct SortIFace *Self, APTR array, ULONG size, struct TagItem * tagList);
-	ULONG APICALL (*Sort)(struct SortIFace *Self, APTR array, ULONG size, ULONG tag1, ...);
 };
 
 
